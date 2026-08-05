@@ -50,6 +50,10 @@ public class Landingpage extends AppCompatActivity {
         setContentView(R.layout.landingpage);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() != null) {
+            startActivity(new Intent(this, Home.class));
+            finish();
+        }
 
         btnLogin = findViewById(R.id.btnLogin);
         btnCreateAccount = findViewById(R.id.btnCreateAccount);
@@ -97,9 +101,18 @@ public class Landingpage extends AppCompatActivity {
 
                     } else {
 
+                        Exception e = task.getException();
+
                         Toast.makeText(this,
                                 "Authentication Failed",
-                                Toast.LENGTH_SHORT).show();
+                                Toast.LENGTH_LONG).show();
+
+                        if (e != null) {
+                            e.printStackTrace();
+                            Toast.makeText(this,
+                                    e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
     }

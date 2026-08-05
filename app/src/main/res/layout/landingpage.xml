@@ -137,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="35dp"
                     android:gravity="center"
-                    android:text="By continuing, you agree to our\nTerms & Privacy Policy"
+                    android:text="By continuing, you agree to our\nTerms &amp; Privacy Policy"
                     android:textAlignment="center"
                     android:textColor="#9A9A9A"
                     android:textSize="12sp"/>

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PETCARE</string>
+
+    <string name="default_web_client_id" translatable="false">
+        506698642430-kkjd6h8chk6i0qnn3ehbsd9has7ijs9i.apps.googleusercontent.com
+    </string>
 </resources>
