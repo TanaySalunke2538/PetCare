@@ -50,10 +50,7 @@ public class Landingpage extends AppCompatActivity {
         setContentView(R.layout.landingpage);
 
         firebaseAuth = FirebaseAuth.getInstance();
-//        if (firebaseAuth.getCurrentUser() != null) {
-//            startActivity(new Intent(this, Home.class));
-//            finish();
-//        }    In future when you add logout feature enable this(uncomment it)
+        //In future when you add logout feature enable this(uncomment it)
 
         btnLogin = findViewById(R.id.btnLogin);
         btnCreateAccount = findViewById(R.id.btnCreateAccount);

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "506698642430-gebt5die7d3im7tc4ej9h243it1l5p93.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.petcare",
+            "certificate_hash": "f0a4da0098e77a6e66292bc567d67f7c780346ae"
+          }
+        },
+        {
           "client_id": "506698642430-sn0o0een233es49ffg89rceo5l6genon.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
