@@ -16,6 +16,6 @@ public class Start extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             startActivity(new Intent(Start.this, Landingpage.class));
             finish();
-        }, 3000);
+        }, 1000);
     }
 }

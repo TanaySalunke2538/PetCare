@@ -71,6 +71,7 @@ public class Login extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(Login.this, Home.class);
+                        intent.putExtra("username", username);
                         startActivity(intent);
                         finish();
 

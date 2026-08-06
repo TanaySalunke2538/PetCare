@@ -1,29 +1,29 @@
 package com.example.petcare;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class Home extends AppCompatActivity {
 
-    Button btnLogout;
+    private TextView txtUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
 
-        btnLogout = findViewById(R.id.btnLogout);
+        txtUsername = findViewById(R.id.txtUsername);
 
-        btnLogout.setOnClickListener(v -> {
+        // Get username from Login page
+        String username = getIntent().getStringExtra("username");
 
-            Intent intent = new Intent(Home.this, Landingpage.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (username != null && !username.isEmpty()) {
+            txtUsername.setText(username + " 👋");
+        } else {
+            txtUsername.setText("Guest 👋");
+        }
 
-            startActivity(intent);
-            finish();
-        });
     }
 }

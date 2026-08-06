@@ -95,7 +95,10 @@ public class Landingpage extends AppCompatActivity {
                                 "Login Successful",
                                 Toast.LENGTH_SHORT).show();
 
+                        String name = firebaseAuth.getCurrentUser().getDisplayName();
+
                         Intent intent = new Intent(Landingpage.this, Home.class);
+                        intent.putExtra("username", name);
                         startActivity(intent);
                         finish();
 
