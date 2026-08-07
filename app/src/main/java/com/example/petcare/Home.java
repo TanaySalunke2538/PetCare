@@ -46,8 +46,9 @@ public class Home extends AppCompatActivity {
 
         });
 
-        cardCalendar.setOnClickListener(v ->
-                startActivity(new Intent(Home.this, Calenderpage.class)));
+        cardCalendar.setOnClickListener(v -> {
+            startActivity(new Intent(Home.this, Calendar.class));
+        });
 
         cardReminder.setOnClickListener(v ->
                 startActivity(new Intent(Home.this, Memories.class)));
