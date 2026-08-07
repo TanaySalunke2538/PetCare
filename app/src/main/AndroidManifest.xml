@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
     <uses-permission android:name="android.permission.CAMERA"/>
     <!-- For Android 12 and below -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -72,14 +76,6 @@
 
         <activity
             android:name=".Memories"
-            android:exported="false"
-            tools:ignore="Instantiatable" />
-        <activity
-            android:name=".Helpline"
-            android:exported="false"
-            tools:ignore="Instantiatable" />
-        <activity
-            android:name=".Help"
             android:exported="false"
             tools:ignore="Instantiatable" />
         <activity

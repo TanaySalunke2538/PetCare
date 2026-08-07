@@ -246,10 +246,11 @@
                         android:textStyle="bold"/>
 
                     <TextView
+                        android:id="@+id/txtUpcomingReminder"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Vaccination • 20 Aug 2026"
+                        android:text="No upcoming reminders"
                         android:textSize="16sp"/>
 
                 </LinearLayout>
@@ -263,12 +264,12 @@
     <!-- Bottom Help Button -->
 
     <Button
-        android:id="@+id/btnHelp"
+        android:id="@+id/btnbot"
         android:layout_width="0dp"
         android:layout_height="55dp"
         android:layout_margin="20dp"
         android:backgroundTint="#F7943D"
-        android:text="HELP CENTER"
+        android:text="AI BOT"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="17sp"
