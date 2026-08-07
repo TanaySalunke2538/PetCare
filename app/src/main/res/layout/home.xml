@@ -98,7 +98,7 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:src="@drawable/ic_profile"
-                            android:tint="@color/orange"/>
+                            app:tint="@color/orange"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -131,7 +131,7 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:src="@drawable/ic_calendar"
-                            android:tint="@color/orange"/>
+                            app:tint="@color/orange"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -173,7 +173,7 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:src="@drawable/ic_memories"
-                            android:tint="@color/orange"/>
+                            app:tint="@color/orange"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -206,7 +206,7 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:src="@drawable/ic_healthreport"
-                            android:tint="@color/orange"/>
+                            app:tint="@color/orange"/>
 
                         <TextView
                             android:layout_width="wrap_content"
