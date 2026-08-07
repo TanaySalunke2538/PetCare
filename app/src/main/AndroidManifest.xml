@@ -6,6 +6,8 @@
         android:name="android.hardware.camera"
         android:required="false" />
     <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- For Android 12 and below -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28"/>
@@ -53,7 +55,9 @@
             android:name=".Login"
             android:exported="false" />
 
-
+        <activity
+            android:name=".ChatbotActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
         <!-- Create Account Page -->
         <activity
             android:name=".Createacc"

@@ -2,6 +2,7 @@ package com.example.petcare;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -29,6 +30,16 @@ public class Home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
+        Button btnbot = findViewById(R.id.btnbot);
+
+        btnbot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Home.this, ChatbotActivity.class);
+                intent.putExtra("username", username);
+                startActivity(intent);
+            }
+        });
 
         txtWelcome = findViewById(R.id.txtWelcome);
         TextView txtUpcomingReminder = findViewById(R.id.txtUpcomingReminder);
@@ -47,8 +58,6 @@ public class Home extends AppCompatActivity {
         cardProfile = findViewById(R.id.cardProfile);
         cardCalendar = findViewById(R.id.cardCalendar);
         cardReminder = findViewById(R.id.cardReminder);
-        btnHelpline = findViewById(R.id.btnHelpline);
-        btnHelp = findViewById(R.id.btnHelp);
 
         cardProfile.setOnClickListener(v -> {
 
@@ -71,11 +80,6 @@ public class Home extends AppCompatActivity {
         cardReminder.setOnClickListener(v ->
                 startActivity(new Intent(Home.this, Memories.class)));
 
-        btnHelpline.setOnClickListener(v ->
-                startActivity(new Intent(Home.this, Helpline.class)));
-
-        btnHelp.setOnClickListener(v ->
-                startActivity(new Intent(Home.this, Helpline.class)));
     }
     private void loadUpcomingReminder(TextView txtUpcomingReminder) {
 
