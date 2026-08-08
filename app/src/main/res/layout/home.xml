@@ -321,7 +321,9 @@
         android:layout_margin="20dp"
         android:backgroundTint="#F7943D"
         android:elevation="8dp"
-        android:text="AI BOT"
+        android:text="CHAT WITH ALEX🐶"
+        android:background="@drawable/button_orange"
+
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="17sp"
