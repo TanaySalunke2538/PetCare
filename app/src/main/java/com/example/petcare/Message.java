@@ -3,15 +3,15 @@ package com.example.petcare;
 public class Message {
 
     private String message;
-    private boolean isUser;
+    private boolean user;
 
+    // Required by Firebase
     public Message() {
-        // Required for Firebase
     }
 
-    public Message(String message, boolean isUser) {
+    public Message(String message, boolean user) {
         this.message = message;
-        this.isUser = isUser;
+        this.user = user;
     }
 
     public String getMessage() {
@@ -19,6 +19,6 @@ public class Message {
     }
 
     public boolean isUser() {
-        return isUser;
+        return user;
     }
 }

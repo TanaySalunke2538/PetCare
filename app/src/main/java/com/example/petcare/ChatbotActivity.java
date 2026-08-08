@@ -9,12 +9,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import android.widget.ImageButton;
 import java.util.ArrayList;
 
 public class ChatbotActivity extends AppCompatActivity {
     private GeminiService geminiService;
     private DatabaseReference chatRef;
+    private ImageButton btnClearChat;
     private String username;
     private RecyclerView recyclerView;
     private EditText etMessage;
@@ -54,7 +55,7 @@ public class ChatbotActivity extends AppCompatActivity {
         etMessage = findViewById(R.id.etMessage);
         btnSend = findViewById(R.id.btnSend);
         btnBack = findViewById(R.id.btnBack);
-
+        btnClearChat = findViewById(R.id.btnClearChat);
         messageList = new ArrayList<>();
 
         adapter = new MessageAdapter(messageList);
@@ -67,16 +68,7 @@ public class ChatbotActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         // Welcome message
-        messageList.add(
-                new Message(
-                        "Hello! I'm PetCare AI 🐾\nHow can I help you today?",
-                        false
-                )
-        );
-
-        adapter.notifyItemInserted(
-                messageList.size() - 1
-        );
+        loadChatHistory();
 
         btnBack.setOnClickListener(
                 v -> finish()
@@ -241,5 +233,86 @@ public class ChatbotActivity extends AppCompatActivity {
                         );
                     }
                 });
+    }
+    private void loadChatHistory() {
+
+        if (username.isEmpty()) {
+
+            showWelcomeMessage();
+            return;
+        }
+
+        chatRef.addListenerForSingleValueEvent(
+                new com.google.firebase.database.ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(
+                            com.google.firebase.database.DataSnapshot snapshot) {
+
+                        messageList.clear();
+
+                        if (snapshot.exists()) {
+
+                            for (com.google.firebase.database.DataSnapshot data
+                                    : snapshot.getChildren()) {
+
+                                Message message =
+                                        data.getValue(Message.class);
+
+                                if (message != null) {
+                                    messageList.add(message);
+                                }
+                            }
+
+                        }
+
+                        // No previous conversation
+                        if (messageList.isEmpty()) {
+                            showWelcomeMessage();
+                        }
+
+                        adapter.notifyDataSetChanged();
+
+                        if (!messageList.isEmpty()) {
+
+                            recyclerView.scrollToPosition(
+                                    messageList.size() - 1
+                            );
+                        }
+
+                        android.util.Log.d(
+                                "CHAT_DEBUG",
+                                "Chat history loaded. Messages = "
+                                        + messageList.size()
+                        );
+                    }
+
+                    @Override
+                    public void onCancelled(
+                            com.google.firebase.database.DatabaseError error) {
+
+                        android.util.Log.e(
+                                "CHAT_DEBUG",
+                                "Failed to load chat history: "
+                                        + error.getMessage()
+                        );
+
+                        showWelcomeMessage();
+                    }
+                }
+        );
+    }
+    private void showWelcomeMessage() {
+
+        messageList.add(
+                new Message(
+                        "Hello! I'm PetCare AI 🐾\nHow can I help you today?",
+                        false
+                )
+        );
+
+        adapter.notifyItemInserted(
+                messageList.size() - 1
+        );
     }
 }
