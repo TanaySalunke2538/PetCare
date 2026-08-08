@@ -1,15 +1,17 @@
 package com.example.petcare;
+
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -25,13 +27,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 public class Home extends AppCompatActivity {
 
@@ -83,8 +78,6 @@ public class Home extends AppCompatActivity {
         txtWelcome.setText("Welcome, " + username + "!");
 
         // AI Bot button
-        Button btnbot = findViewById(R.id.btnbot);
-
         btnbot.setOnClickListener(v -> {
 
             Intent intent =
@@ -143,7 +136,10 @@ public class Home extends AppCompatActivity {
         cardCalendar.setOnClickListener(v -> {
 
             Intent intent =
-                    new Intent(Home.this, Calendar.class);
+                    new Intent(
+                            Home.this,
+                            com.example.petcare.Calendar.class
+                    );
 
             intent.putExtra("username", username);
 
@@ -355,22 +351,22 @@ public class Home extends AppCompatActivity {
                 return "Age unknown";
             }
 
-            Calendar birth = Calendar.getInstance();
+            java.util.Calendar birth = java.util.Calendar.getInstance();
             birth.setTime(birthDate);
 
-            Calendar today = Calendar.getInstance();
+            java.util.Calendar today = java.util.Calendar.getInstance();
 
             int years =
-                    today.get(Calendar.YEAR)
-                            - birth.get(Calendar.YEAR);
+                    today.get(java.util.Calendar.YEAR)
+                            - birth.get(java.util.Calendar.YEAR);
 
             int months =
-                    today.get(Calendar.MONTH)
-                            - birth.get(Calendar.MONTH);
+                    today.get(java.util.Calendar.MONTH)
+                            - birth.get(java.util.Calendar.MONTH);
 
             int days =
-                    today.get(Calendar.DAY_OF_MONTH)
-                            - birth.get(Calendar.DAY_OF_MONTH);
+                    today.get(java.util.Calendar.DAY_OF_MONTH)
+                            - birth.get(java.util.Calendar.DAY_OF_MONTH);
 
             // Birthday has not occurred this month
             if (days < 0) {
