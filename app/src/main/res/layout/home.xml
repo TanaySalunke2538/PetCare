@@ -49,6 +49,77 @@
     </LinearLayout>
 
 
+    <!-- ================= PET PROFILE SUMMARY ================= -->
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardPetSummary"
+        android:layout_width="0dp"
+        android:layout_height="92dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        app:cardBackgroundColor="#EAF7F7"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <!-- ================= PET IMAGE ================= -->
+
+            <ImageView
+                android:id="@+id/imgPetHome"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:background="@drawable/circle_photo_border"
+                android:clipToOutline="true"
+                android:contentDescription="Pet Photo"
+                android:outlineProvider="background"
+                android:scaleType="centerCrop"
+                android:src="@drawable/pet_logo" />
+
+
+            <!-- ================= PET NAME + AGE ================= -->
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="14dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtPetNameHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Your Pet"
+                    android:textColor="#222222"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtPetAgeHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="2 yrs"
+                    android:textColor="#555555"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
     <!-- ================= MAIN CONTENT ================= -->
 
     <ScrollView
@@ -57,7 +128,7 @@
         android:fillViewport="true"
         android:clipToPadding="false"
         android:paddingBottom="85dp"
-        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintTop_toBottomOf="@id/cardPetSummary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -192,42 +263,6 @@
 
                 </androidx.cardview.widget.CardView>
 
-
-                <!-- HEALTH RECORD -->
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardHealth"
-                    android:layout_width="0dp"
-                    android:layout_height="145dp"
-                    android:layout_weight="1"
-                    android:layout_margin="8dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="5dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:src="@drawable/ic_healthreport"
-                            app:tint="@color/orange" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="Health Record"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
             </LinearLayout>
 
 
@@ -246,8 +281,6 @@
                     android:orientation="vertical"
                     android:padding="18dp">
 
-                    <!-- TITLE -->
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -260,22 +293,19 @@
                         android:shadowDy="2"
                         android:shadowRadius="3" />
 
-                    <!-- REMINDER LIST -->
-
                     <ListView
                         android:id="@+id/homeReminderList"
                         android:layout_width="match_parent"
                         android:layout_height="220dp"
                         android:layout_marginTop="10dp"
+                        android:background="@android:color/transparent"
                         android:divider="@android:color/transparent"
                         android:dividerHeight="8dp"
-                        android:background="@android:color/transparent"
                         android:overScrollMode="never" />
 
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
-
 
         </LinearLayout>
 
@@ -290,12 +320,12 @@
         android:layout_height="55dp"
         android:layout_margin="20dp"
         android:backgroundTint="#F7943D"
+        android:elevation="8dp"
         android:text="AI BOT"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="17sp"
         android:textStyle="bold"
-        android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
