@@ -49,7 +49,7 @@ public class MemoryAdapter extends BaseAdapter {
         if (convertView == null) {
 
             convertView = LayoutInflater.from(context)
-                    .inflate(R.layout.item_memory, parent, true);
+                    .inflate(R.layout.item_memory, parent, false);
 
         }
 

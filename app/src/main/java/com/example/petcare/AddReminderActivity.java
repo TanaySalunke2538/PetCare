@@ -92,7 +92,7 @@ public class AddReminderActivity extends AppCompatActivity {
 
         btnSave.setOnClickListener(v -> {
 
-            Toast.makeText(this, "Save button clicked", Toast.LENGTH_SHORT).show();
+
 
             String title = etTitle.getText().toString().trim();
 
@@ -127,7 +127,7 @@ public class AddReminderActivity extends AppCompatActivity {
                     .child("reminders")
                     .push()
                     .getKey();
-            Toast.makeText(this, "ID = " + reminderId, Toast.LENGTH_LONG).show();
+
             Reminder reminder = new Reminder(
                     title,
                     category,

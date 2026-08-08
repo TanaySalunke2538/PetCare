@@ -3,10 +3,10 @@ package com.example.petcare;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -17,105 +17,186 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class Home extends AppCompatActivity {
+
     private DatabaseReference reminderRef;
-    private CardView cardProfile, cardCalendar, cardReminder;
-    private ImageButton btnHelpline;
+
+    private CardView cardProfile;
+    private CardView cardCalendar;
+    private CardView cardReminder;
+
     private Button btnHelp;
     private TextView txtWelcome;
+
+    private ListView homeReminderList;
+
+    private ArrayList<String> reminderList;
+    private ArrayAdapter<String> reminderAdapter;
 
     private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.home);
-        Button btnbot = findViewById(R.id.btnbot);
 
-        btnbot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Home.this, ChatbotActivity.class);
-                intent.putExtra("username", username);
-                startActivity(intent);
-            }
-        });
-
-        txtWelcome = findViewById(R.id.txtWelcome);
-        TextView txtUpcomingReminder = findViewById(R.id.txtUpcomingReminder);
+        // Get username
         username = getIntent().getStringExtra("username");
-        reminderRef = FirebaseDatabase.getInstance()
-                .getReference("Users")
-                .child(username)
-                .child("reminders");
-        loadUpcomingReminder(txtUpcomingReminder);
-        Toast.makeText(this, "Username = " + username, Toast.LENGTH_LONG).show();
-        if (username == null)
-            username = "";
 
+        if (username == null) {
+            username = "";
+        }
+
+        // Welcome text
+        txtWelcome = findViewById(R.id.txtWelcome);
         txtWelcome.setText("Welcome, " + username + "!");
 
+        // AI Bot button
+        Button btnbot = findViewById(R.id.btnbot);
+
+        btnbot.setOnClickListener(v -> {
+
+            Intent intent =
+                    new Intent(Home.this, ChatbotActivity.class);
+
+            intent.putExtra("username", username);
+
+            startActivity(intent);
+        });
+
+        // Cards
         cardProfile = findViewById(R.id.cardProfile);
         cardCalendar = findViewById(R.id.cardCalendar);
         cardReminder = findViewById(R.id.cardReminder);
 
+        // Firebase reference
+        reminderRef = FirebaseDatabase
+                .getInstance()
+                .getReference("Users")
+                .child(username)
+                .child("reminders");
+
+        // Home reminder ListView
+        homeReminderList =
+                findViewById(R.id.homeReminderList);
+
+        reminderList = new ArrayList<>();
+
+        reminderAdapter = new ArrayAdapter<>(
+                this,
+                R.layout.item_reminder,
+                R.id.txtReminder,
+                reminderList
+        );
+
+        homeReminderList.setAdapter(reminderAdapter);
+
+        // Load reminders
+        loadUpcomingReminders();
+
+        // Profile
         cardProfile.setOnClickListener(v -> {
 
-            Intent intent = new Intent(Home.this, Profilepage.class);
-            intent.putExtra("username", username);
-            startActivity(intent);
+            Intent intent =
+                    new Intent(Home.this, Profilepage.class);
 
+            intent.putExtra("username", username);
+
+            startActivity(intent);
         });
 
+        // Calendar
         cardCalendar.setOnClickListener(v -> {
 
-            Intent intent = new Intent(Home.this, Calendar.class);
+            Intent intent =
+                    new Intent(Home.this, Calendar.class);
 
             intent.putExtra("username", username);
 
             startActivity(intent);
-
         });
 
-        cardReminder.setOnClickListener(v ->
-                startActivity(new Intent(Home.this, Memories.class)));
+        // Memories
+        cardReminder.setOnClickListener(v -> {
 
+            Intent intent =
+                    new Intent(Home.this, Memories.class);
+
+            intent.putExtra("username", username);
+
+            startActivity(intent);
+        });
     }
-    private void loadUpcomingReminder(TextView txtUpcomingReminder) {
 
-        reminderRef.addValueEventListener(new ValueEventListener() {
+    private void loadUpcomingReminders() {
 
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
+        reminderRef.addValueEventListener(
+                new ValueEventListener() {
 
-                if (!snapshot.exists()) {
-                    txtUpcomingReminder.setText("No upcoming reminders");
-                    return;
-                }
+                    @Override
+                    public void onDataChange(
+                            DataSnapshot snapshot) {
 
-                for (DataSnapshot data : snapshot.getChildren()) {
+                        reminderList.clear();
 
-                    Reminder reminder = data.getValue(Reminder.class);
+                        if (!snapshot.exists()) {
 
-                    if (reminder != null) {
+                            reminderList.add(
+                                    "No upcoming reminders"
+                            );
 
-                        txtUpcomingReminder.setText(
-                                reminder.getTitle() +
-                                        "\n" +
-                                        reminder.getDate() +
-                                        "  " +
-                                        reminder.getTime()
+                            reminderAdapter.notifyDataSetChanged();
+
+                            return;
+                        }
+
+                        for (DataSnapshot data :
+                                snapshot.getChildren()) {
+
+                            Reminder reminder =
+                                    data.getValue(Reminder.class);
+
+                            if (reminder != null) {
+
+                                String reminderText =
+                                        reminder.getTitle()
+                                                + " - "
+                                                + reminder.getDate()
+                                                + "  "
+                                                + reminder.getTime();
+
+                                reminderList.add(
+                                        reminderText
+                                );
+                            }
+                        }
+
+                        if (reminderList.isEmpty()) {
+
+                            reminderList.add(
+                                    "No upcoming reminders"
+                            );
+                        }
+
+                        reminderAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(
+                            DatabaseError error) {
+
+                        reminderList.clear();
+
+                        reminderList.add(
+                                "Unable to load reminders"
                         );
 
-                        break;
+                        reminderAdapter.notifyDataSetChanged();
                     }
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-
-            }
-        });
+        );
     }
 }
