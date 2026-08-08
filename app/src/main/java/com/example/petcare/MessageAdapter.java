@@ -1,5 +1,4 @@
 package com.example.petcare;
-
 import android.graphics.Color;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -49,24 +48,68 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         Message message = messageList.get(position);
 
-        holder.txtMessage.setText(message.getMessage());
-
         if (message.isUser()) {
 
             holder.layoutMessage.setGravity(Gravity.END);
 
-            holder.txtMessage.setBackgroundColor(Color.parseColor("#F7943D"));
+            holder.txtMessage.setBackgroundResource(
+                    R.drawable.bg_user_message
+            );
+
             holder.txtMessage.setTextColor(Color.WHITE);
+
+            holder.txtMessage.setText(
+                    message.getMessage()
+            );
 
         } else {
 
             holder.layoutMessage.setGravity(Gravity.START);
 
-            holder.txtMessage.setBackgroundColor(Color.WHITE);
+            holder.txtMessage.setBackgroundResource(
+                    R.drawable.bg_ai_message
+            );
+
             holder.txtMessage.setTextColor(Color.BLACK);
+
+            holder.txtMessage.setText(
+                    formatAiMessage(message.getMessage())
+            );
+        }
+
+        holder.txtMessage.setLineSpacing(0f, 1.15f);
+    }
+    private android.text.Spanned formatAiMessage(String text) {
+
+        // Convert Markdown bold to HTML bold
+        text = text.replaceAll(
+                "\\*\\*(.*?)\\*\\*",
+                "<b>$1</b>"
+        );
+
+        // Preserve paragraph/line breaks
+        text = text.replace("\r\n", "\n");
+        text = text.replace("\n\n", "<br><br>");
+        text = text.replace("\n", "<br>");
+
+        // Add spacing before numbered list items
+        text = text.replaceAll(
+                "(?<!^)(\\d+\\.\\s)",
+                "<br><br>$1"
+        );
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+
+            return android.text.Html.fromHtml(
+                    text,
+                    android.text.Html.FROM_HTML_MODE_LEGACY
+            );
+
+        } else {
+
+            return android.text.Html.fromHtml(text);
         }
     }
-
     @Override
     public int getItemCount() {
         return messageList.size();

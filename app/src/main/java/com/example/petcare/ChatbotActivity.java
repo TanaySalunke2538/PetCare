@@ -2,6 +2,7 @@ package com.example.petcare;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import com.google.firebase.database.DatabaseReference;
@@ -10,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.widget.ImageButton;
+import android.widget.TextView;
+
 import java.util.ArrayList;
 
 public class ChatbotActivity extends AppCompatActivity {
@@ -20,9 +23,10 @@ public class ChatbotActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private EditText etMessage;
     private ImageButton btnSend, btnBack;
-
+    private TextView typingIndicator;
     private ArrayList<Message> messageList;
     private MessageAdapter adapter;
+    private boolean isWaitingForResponse = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,7 @@ public class ChatbotActivity extends AppCompatActivity {
         btnSend = findViewById(R.id.btnSend);
         btnBack = findViewById(R.id.btnBack);
         btnClearChat = findViewById(R.id.btnClearChat);
+        typingIndicator = findViewById(R.id.typingIndicator);
         messageList = new ArrayList<>();
 
         adapter = new MessageAdapter(messageList);
@@ -66,6 +71,19 @@ public class ChatbotActivity extends AppCompatActivity {
         );
 
         recyclerView.setAdapter(adapter);
+        recyclerView.addOnLayoutChangeListener(
+                (v, left, top, right, bottom,
+                 oldLeft, oldTop, oldRight, oldBottom) -> {
+
+                    if (bottom < oldBottom) {
+                        recyclerView.post(() ->
+                                recyclerView.scrollToPosition(
+                                        messageList.size() - 1
+                                )
+                        );
+                    }
+                }
+        );
 
         // Welcome message
         loadChatHistory();
@@ -81,11 +99,16 @@ public class ChatbotActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
+        if (isWaitingForResponse) {
+            return;
+        }
 
         String userMessage = etMessage.getText().toString().trim();
 
         if(userMessage.isEmpty())
             return;
+
+        isWaitingForResponse = true;
 
         // User message
         Message userMessageObject = new Message(userMessage, true);
@@ -101,21 +124,10 @@ public class ChatbotActivity extends AppCompatActivity {
 
         // Disable send button while waiting
         btnSend.setEnabled(false);
+        typingIndicator.setVisibility(View.VISIBLE);
+        ArrayList<Message> conversationHistory =
+                new ArrayList<>(messageList);
 
-        // Typing indicator
-        messageList.add(new Message("PetCare AI is typing...",false));
-        adapter.notifyItemInserted(messageList.size()-1);
-        recyclerView.scrollToPosition(messageList.size()-1);
-
-        int typingIndex = messageList.size()-1;
-
-        ArrayList<Message> conversationHistory = new ArrayList<>();
-
-        for (Message message : messageList) {
-            if (!message.getMessage().equals("PetCare AI is typing...")) {
-                conversationHistory.add(message);
-            }
-        }
 
         geminiService.askGemini(
                 conversationHistory,
@@ -125,9 +137,7 @@ public class ChatbotActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
 
-                    // Remove typing message
-                    messageList.remove(typingIndex);
-                    adapter.notifyItemRemoved(typingIndex);
+                    typingIndicator.setVisibility(View.GONE);
 
                     // Add AI response
                     Message botMessage = new Message(response, false);
@@ -138,7 +148,9 @@ public class ChatbotActivity extends AppCompatActivity {
 
                     recyclerView.scrollToPosition(messageList.size()-1);
 
+                    isWaitingForResponse = false;
                     btnSend.setEnabled(true);
+
 
                 });
 
@@ -149,8 +161,7 @@ public class ChatbotActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
 
-                    messageList.remove(typingIndex);
-                    adapter.notifyItemRemoved(typingIndex);
+                    typingIndicator.setVisibility(View.GONE);
 
                     messageList.add(
                             new Message(
@@ -160,7 +171,7 @@ public class ChatbotActivity extends AppCompatActivity {
                     adapter.notifyItemInserted(messageList.size()-1);
 
                     recyclerView.scrollToPosition(messageList.size()-1);
-
+                    isWaitingForResponse = false;
                     btnSend.setEnabled(true);
 
                 });
