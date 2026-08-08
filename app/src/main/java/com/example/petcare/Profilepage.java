@@ -1,5 +1,7 @@
 package com.example.petcare;
-
+import android.app.DatePickerDialog;
+import java.util.Calendar;
+import java.util.Locale;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -22,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class Profilepage extends AppCompatActivity {
@@ -592,19 +595,31 @@ public class Profilepage extends AppCompatActivity {
                             // DOB
                             // =================================
 
-                            String dob =
-                                    documentSnapshot.getString(
-                                            "dob"
-                                    );
+                            etDOB.setOnClickListener(v -> {
 
+                                Calendar calendar = Calendar.getInstance();
 
-                            if (dob != null) {
+                                DatePickerDialog datePickerDialog = new DatePickerDialog(
+                                        Profilepage.this,
+                                        (view, year, month, dayOfMonth) -> {
 
-                                etDOB.setText(
-                                        dob
+                                            String dob = String.format(
+                                                    Locale.getDefault(),
+                                                    "%02d/%02d/%04d",
+                                                    dayOfMonth,
+                                                    month + 1,
+                                                    year
+                                            );
+
+                                            etDOB.setText(dob);
+                                        },
+                                        calendar.get(Calendar.YEAR),
+                                        calendar.get(Calendar.MONTH),
+                                        calendar.get(Calendar.DAY_OF_MONTH)
                                 );
 
-                            }
+                                datePickerDialog.show();
+                            });
 
 
                             // =================================

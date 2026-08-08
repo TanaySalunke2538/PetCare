@@ -1,10 +1,15 @@
 package com.example.petcare;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,283 +24,380 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class Home extends AppCompatActivity {
 
-    // =====================================================
-    // FIREBASE
-    // =====================================================
-
     private DatabaseReference reminderRef;
-
-
-    // =====================================================
-    // HOME CARDS
-    // =====================================================
-
+    private FirebaseFirestore db;
     private CardView cardProfile;
     private CardView cardCalendar;
     private CardView cardReminder;
-
-
-    // =====================================================
-    // BUTTONS / TEXT
-    // =====================================================
-
     private Button btnbot;
     private TextView txtWelcome;
 
-
-    // =====================================================
-    // PET PROFILE IMAGE
-    // =====================================================
-
-    private ImageView imgPetHome;
-
-
-    // =====================================================
-    // REMINDERS
-    // =====================================================
-
     private ListView homeReminderList;
-
+    private TextView txtUpcomingReminder;
     private ArrayList<String> reminderList;
-
     private ArrayAdapter<String> reminderAdapter;
-
-
-    // =====================================================
-    // USERNAME
-    // =====================================================
-
+    private TextView txtPetNameHome;
+    private TextView txtPetAgeHome;
+    private ImageView imgPetHome;
     private String username;
-
-
-    // =====================================================
-    // ON CREATE
-    // =====================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.home);
+        txtPetNameHome =
+                findViewById(R.id.txtPetNameHome);
 
-
-        // =================================================
-        // GET USERNAME
-        // =================================================
-
-        username =
-                getIntent().getStringExtra("username");
-
-        if (username == null ||
-                username.isEmpty()) {
-
-            username = "Guest";
-
-        }
-
-
-        // =================================================
-        // WELCOME TEXT
-        // =================================================
-
-        txtWelcome =
-                findViewById(R.id.txtWelcome);
-
-        txtWelcome.setText(
-                "Welcome, " + username + "!"
-        );
-
-
-        // =================================================
-        // PET PROFILE IMAGE
-        // =================================================
+        txtPetAgeHome =
+                findViewById(R.id.txtPetAgeHome);
 
         imgPetHome =
                 findViewById(R.id.imgPetHome);
 
-        loadHomeProfilePhoto();
-
-
-        // =================================================
-        // AI BOT BUTTON
-        // =================================================
-
         btnbot =
                 findViewById(R.id.btnbot);
+        cardProfile =
+                findViewById(R.id.cardProfile);
+        // Get username
+        username = getIntent().getStringExtra("username");
 
+        if (username == null) {
+            username = "";
+        }
+
+        db = FirebaseFirestore.getInstance();
+        // Welcome text
+        txtWelcome = findViewById(R.id.txtWelcome);
+        txtWelcome.setText("Welcome, " + username + "!");
+
+        // AI Bot button
+        Button btnbot = findViewById(R.id.btnbot);
 
         btnbot.setOnClickListener(v -> {
 
             Intent intent =
-                    new Intent(
-                            Home.this,
-                            ChatbotActivity.class
-                    );
+                    new Intent(Home.this, ChatbotActivity.class);
 
-            intent.putExtra(
-                    "username",
-                    username
-            );
+            intent.putExtra("username", username);
 
             startActivity(intent);
-
         });
+        loadPetProfile();
 
+        loadPetPhoto();
 
-        // =================================================
-        // CARDS
-        // =================================================
+        // Cards
+        cardProfile = findViewById(R.id.cardProfile);
+        cardCalendar = findViewById(R.id.cardCalendar);
+        cardReminder = findViewById(R.id.cardReminder);
 
-        cardProfile =
-                findViewById(R.id.cardProfile);
+        // Firebase reference
+        reminderRef = FirebaseDatabase
+                .getInstance()
+                .getReference("Users")
+                .child(username)
+                .child("reminders");
 
-        cardCalendar =
-                findViewById(R.id.cardCalendar);
-
-        cardReminder =
-                findViewById(R.id.cardReminder);
-
-
-        // =================================================
-        // FIREBASE REMINDER REFERENCE
-        // =================================================
-
-        reminderRef =
-                FirebaseDatabase
-                        .getInstance()
-                        .getReference("Users")
-                        .child(username)
-                        .child("reminders");
-
-
-        // =================================================
-        // HOME REMINDER LIST
-        // =================================================
-
+        // Home reminder ListView
         homeReminderList =
-                findViewById(
-                        R.id.homeReminderList
-                );
+                findViewById(R.id.homeReminderList);
 
+        reminderList = new ArrayList<>();
 
-        reminderList =
-                new ArrayList<>();
-
-
-        reminderAdapter =
-                new ArrayAdapter<>(
-                        this,
-                        R.layout.item_reminder,
-                        R.id.txtReminder,
-                        reminderList
-                );
-
-
-        homeReminderList.setAdapter(
-                reminderAdapter
+        reminderAdapter = new ArrayAdapter<>(
+                this,
+                R.layout.item_reminder,
+                R.id.txtReminder,
+                reminderList
         );
 
+        homeReminderList.setAdapter(reminderAdapter);
 
-        // =================================================
-        // LOAD REMINDERS
-        // =================================================
-
+        // Load reminders
         loadUpcomingReminders();
 
-
-        // =================================================
-        // PROFILE CARD
-        // =================================================
-
+        // Profile
         cardProfile.setOnClickListener(v -> {
 
             Intent intent =
-                    new Intent(
-                            Home.this,
-                            Profilepage.class
-                    );
+                    new Intent(Home.this, Profilepage.class);
 
-            intent.putExtra(
-                    "username",
-                    username
-            );
+            intent.putExtra("username", username);
 
             startActivity(intent);
-
         });
 
-
-        // =================================================
-        // CALENDAR CARD
-        // =================================================
-
+        // Calendar
         cardCalendar.setOnClickListener(v -> {
 
             Intent intent =
-                    new Intent(
-                            Home.this,
-                            Calendar.class
-                    );
+                    new Intent(Home.this, Calendar.class);
 
-            intent.putExtra(
-                    "username",
-                    username
-            );
+            intent.putExtra("username", username);
 
             startActivity(intent);
-
         });
 
-
-        // =================================================
-        // MEMORIES CARD
-        // =================================================
-
+        // Memories
         cardReminder.setOnClickListener(v -> {
 
             Intent intent =
-                    new Intent(
-                            Home.this,
-                            Memories.class
-                    );
+                    new Intent(Home.this, Memories.class);
 
-            intent.putExtra(
-                    "username",
-                    username
-            );
+            intent.putExtra("username", username);
 
             startActivity(intent);
-
         });
+    }
+
+    private void loadUpcomingReminders() {
+
+        reminderRef.addValueEventListener(
+                new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(
+                            DataSnapshot snapshot) {
+
+                        reminderList.clear();
+
+                        if (!snapshot.exists()) {
+
+                            reminderList.add(
+                                    "No upcoming reminders"
+                            );
+
+                            reminderAdapter.notifyDataSetChanged();
+
+                            return;
+                        }
+
+                        for (DataSnapshot data :
+                                snapshot.getChildren()) {
+
+                            Reminder reminder =
+                                    data.getValue(Reminder.class);
+
+                            if (reminder != null) {
+
+                                String reminderText =
+                                        reminder.getTitle()
+                                                + " - "
+                                                + reminder.getDate()
+                                                + "  "
+                                                + reminder.getTime();
+
+                                reminderList.add(
+                                        reminderText
+                                );
+                            }
+                        }
+
+                        if (reminderList.isEmpty()) {
+
+                            reminderList.add(
+                                    "No upcoming reminders"
+                            );
+                        }
+
+                        reminderAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(
+                            DatabaseError error) {
+
+                        reminderList.clear();
+
+                        reminderList.add(
+                                "Unable to load reminders"
+                        );
+
+                        reminderAdapter.notifyDataSetChanged();
+                    }
+                }
+        );
+
+    }
+
+    private void loadPetProfile() {
+
+        db.collection("users")
+                .document(username)
+                .collection("profile")
+                .document("details")
+                .get()
+
+                .addOnSuccessListener(document -> {
+
+                    // =====================================
+                    // PROFILE DOES NOT EXIST
+                    // =====================================
+
+                    if (!document.exists()) {
+
+                        txtPetNameHome.setText(
+                                "Your Pet"
+                        );
+
+                        txtPetAgeHome.setText(
+                                "Add profile"
+                        );
+
+                        return;
+                    }
+
+
+                    // =====================================
+                    // PET NAME
+                    // =====================================
+
+                    String petName =
+                            document.getString(
+                                    "petName"
+                            );
+
+
+                    if (petName != null &&
+                            !petName.isEmpty()) {
+
+                        txtPetNameHome.setText(
+                                petName
+                        );
+
+                    } else {
+
+                        txtPetNameHome.setText(
+                                "Your Pet"
+                        );
+
+                    }
+
+
+                    // =====================================
+                    // PET DOB
+                    // =====================================
+
+                    String dob =
+                            document.getString(
+                                    "dob"
+                            );
+
+
+
+                    if (dob != null && !dob.isEmpty()) {
+
+                        String age = calculateAge(dob);
+
+                        txtPetAgeHome.setText(age);
+
+                    } else {
+
+                        txtPetAgeHome.setText(
+                                "Age unknown"
+                        );
+
+                    }
+
+
+                })
+
+                .addOnFailureListener(e -> {
+
+                    txtPetNameHome.setText(
+                            "Your Pet"
+                    );
+
+                    txtPetAgeHome.setText(
+                            "Age unavailable"
+                    );
+
+                });
 
     }
 
 
     // =====================================================
-    // LOAD SAVED PROFILE PHOTO
+    // CALCULATE PET AGE
     // =====================================================
 
-    private void loadHomeProfilePhoto() {
+    private String calculateAge(String dob) {
 
-        // Make sure ImageView exists
-
-        if (imgPetHome == null) {
-
-            return;
-
+        if (dob == null || dob.trim().isEmpty()) {
+            return "Age unknown";
         }
 
+        try {
 
-        // =================================================
-        // GET SHARED PREFERENCES
-        // =================================================
+            SimpleDateFormat sdf =
+                    new SimpleDateFormat(
+                            "dd/MM/yyyy",
+                            Locale.getDefault()
+                    );
+
+            sdf.setLenient(false);
+
+            Date birthDate = sdf.parse(dob);
+
+            if (birthDate == null) {
+                return "Age unknown";
+            }
+
+            Calendar birth = Calendar.getInstance();
+            birth.setTime(birthDate);
+
+            Calendar today = Calendar.getInstance();
+
+            int years =
+                    today.get(Calendar.YEAR)
+                            - birth.get(Calendar.YEAR);
+
+            int months =
+                    today.get(Calendar.MONTH)
+                            - birth.get(Calendar.MONTH);
+
+            int days =
+                    today.get(Calendar.DAY_OF_MONTH)
+                            - birth.get(Calendar.DAY_OF_MONTH);
+
+            // Birthday has not occurred this month
+            if (days < 0) {
+                months--;
+            }
+
+            // Adjust months when necessary
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            return years + " yrs " + months + " months";
+
+        } catch (ParseException e) {
+
+            return "Age unknown";
+        }
+    }
+
+
+
+    // =====================================================
+    // LOAD PET PHOTO
+    // =====================================================
+
+    private void loadPetPhoto() {
 
         SharedPreferences preferences =
                 getSharedPreferences(
@@ -304,9 +406,9 @@ public class Home extends AppCompatActivity {
                 );
 
 
-        // =================================================
-        // GET SAVED PHOTO PATH
-        // =================================================
+        // =====================================
+        // GET SAVED FILE PATH
+        // =====================================
 
         String photoPath =
                 preferences.getString(
@@ -315,9 +417,9 @@ public class Home extends AppCompatActivity {
                 );
 
 
-        // =================================================
+        // =====================================
         // NO PHOTO SAVED
-        // =================================================
+        // =====================================
 
         if (photoPath == null ||
                 photoPath.isEmpty()) {
@@ -331,17 +433,17 @@ public class Home extends AppCompatActivity {
         }
 
 
-        // =================================================
-        // CREATE FILE FROM SAVED PATH
-        // =================================================
+        // =====================================
+        // CREATE FILE OBJECT
+        // =====================================
 
         File photoFile =
                 new File(photoPath);
 
 
-        // =================================================
-        // CHECK IF FILE EXISTS
-        // =================================================
+        // =====================================
+        // FILE DOES NOT EXIST
+        // =====================================
 
         if (!photoFile.exists()) {
 
@@ -354,9 +456,9 @@ public class Home extends AppCompatActivity {
         }
 
 
-        // =================================================
+        // =====================================
         // LOAD BITMAP
-        // =================================================
+        // =====================================
 
         Bitmap bitmap =
                 BitmapFactory.decodeFile(
@@ -364,9 +466,9 @@ public class Home extends AppCompatActivity {
                 );
 
 
-        // =================================================
+        // =====================================
         // DISPLAY PHOTO
-        // =================================================
+        // =====================================
 
         if (bitmap != null) {
 
@@ -383,13 +485,7 @@ public class Home extends AppCompatActivity {
         }
 
     }
-
-
-    // =====================================================
-    // LOAD UPCOMING REMINDERS
-    // =====================================================
-
-    private void loadUpcomingReminders() {
+    private void loadUpcomingReminder() {
 
         reminderRef.addValueEventListener(
                 new ValueEventListener() {
@@ -398,21 +494,15 @@ public class Home extends AppCompatActivity {
                     public void onDataChange(
                             DataSnapshot snapshot) {
 
-                        reminderList.clear();
-
-
                         // =================================
                         // NO REMINDERS
                         // =================================
 
                         if (!snapshot.exists()) {
 
-                            reminderList.add(
+                            txtUpcomingReminder.setText(
                                     "No upcoming reminders"
                             );
-
-                            reminderAdapter
-                                    .notifyDataSetChanged();
 
                             return;
 
@@ -420,7 +510,7 @@ public class Home extends AppCompatActivity {
 
 
                         // =================================
-                        // READ REMINDERS
+                        // FIND REMINDER
                         // =================================
 
                         for (DataSnapshot data :
@@ -434,38 +524,19 @@ public class Home extends AppCompatActivity {
 
                             if (reminder != null) {
 
-                                String reminderText =
+                                txtUpcomingReminder.setText(
                                         reminder.getTitle()
-                                                + " - "
+                                                + "\n"
                                                 + reminder.getDate()
                                                 + "  "
-                                                + reminder.getTime();
-
-
-                                reminderList.add(
-                                        reminderText
+                                                + reminder.getTime()
                                 );
+
+                                break;
 
                             }
 
                         }
-
-
-                        // =================================
-                        // EMPTY LIST
-                        // =================================
-
-                        if (reminderList.isEmpty()) {
-
-                            reminderList.add(
-                                    "No upcoming reminders"
-                            );
-
-                        }
-
-
-                        reminderAdapter
-                                .notifyDataSetChanged();
 
                     }
 
@@ -474,16 +545,9 @@ public class Home extends AppCompatActivity {
                     public void onCancelled(
                             DatabaseError error) {
 
-                        reminderList.clear();
-
-
-                        reminderList.add(
-                                "Unable to load reminders"
+                        txtUpcomingReminder.setText(
+                                "No upcoming reminders"
                         );
-
-
-                        reminderAdapter
-                                .notifyDataSetChanged();
 
                     }
 
@@ -494,7 +558,7 @@ public class Home extends AppCompatActivity {
 
 
     // =====================================================
-    // RELOAD PHOTO WHEN RETURNING TO HOME
+    // REFRESH PET DATA WHEN RETURNING TO HOME
     // =====================================================
 
     @Override
@@ -503,12 +567,19 @@ public class Home extends AppCompatActivity {
         super.onResume();
 
 
-        if (imgPetHome != null) {
+        // Reload photo and profile whenever
+        // we return to Home
 
-            loadHomeProfilePhoto();
+        if (username != null &&
+                !username.isEmpty()) {
+
+            loadPetPhoto();
+
+            loadPetProfile();
 
         }
 
     }
+
 
 }
