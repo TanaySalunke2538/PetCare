@@ -4,7 +4,8 @@ import android.os.Looper;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
-
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 
 public class ChatbotActivity extends AppCompatActivity {
     private GeminiService geminiService;
+    private DatabaseReference chatRef;
+    private String username;
     private RecyclerView recyclerView;
     private EditText etMessage;
     private ImageButton btnSend, btnBack;
@@ -25,6 +28,28 @@ public class ChatbotActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatbot);
 
+        username = getIntent().getStringExtra("username");
+
+        if (username == null) {
+            username = "";
+        }
+
+        android.util.Log.d(
+                "CHAT_DEBUG",
+                "Username = " + username
+        );
+
+        // Create Firebase reference FIRST
+        chatRef = FirebaseDatabase.getInstance()
+                .getReference("Users")
+                .child(username)
+                .child("chatHistory");
+
+        android.util.Log.d(
+                "CHAT_DEBUG",
+                "Firebase chat reference created"
+        );
+
         recyclerView = findViewById(R.id.recyclerView);
         etMessage = findViewById(R.id.etMessage);
         btnSend = findViewById(R.id.btnSend);
@@ -35,18 +60,31 @@ public class ChatbotActivity extends AppCompatActivity {
         adapter = new MessageAdapter(messageList);
         geminiService = new GeminiService();
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this)
+        );
+
         recyclerView.setAdapter(adapter);
 
         // Welcome message
-        messageList.add(new Message(
-                "Hello! I'm PetCare AI 🐾\nHow can I help you today?",
-                false));
-        adapter.notifyItemInserted(messageList.size() - 1);
+        messageList.add(
+                new Message(
+                        "Hello! I'm PetCare AI 🐾\nHow can I help you today?",
+                        false
+                )
+        );
 
-        btnBack.setOnClickListener(v -> finish());
+        adapter.notifyItemInserted(
+                messageList.size() - 1
+        );
 
-        btnSend.setOnClickListener(v -> sendMessage());
+        btnBack.setOnClickListener(
+                v -> finish()
+        );
+
+        btnSend.setOnClickListener(
+                v -> sendMessage()
+        );
     }
 
     private void sendMessage() {
@@ -57,7 +95,12 @@ public class ChatbotActivity extends AppCompatActivity {
             return;
 
         // User message
-        messageList.add(new Message(userMessage,true));
+        Message userMessageObject = new Message(userMessage, true);
+
+        messageList.add(userMessageObject);
+
+        saveMessageToFirebase(userMessageObject);
+
         adapter.notifyItemInserted(messageList.size()-1);
         recyclerView.scrollToPosition(messageList.size()-1);
 
@@ -73,8 +116,17 @@ public class ChatbotActivity extends AppCompatActivity {
 
         int typingIndex = messageList.size()-1;
 
-        geminiService.askGemini(userMessage,new GeminiService.GeminiCallback() {
+        ArrayList<Message> conversationHistory = new ArrayList<>();
 
+        for (Message message : messageList) {
+            if (!message.getMessage().equals("PetCare AI is typing...")) {
+                conversationHistory.add(message);
+            }
+        }
+
+        geminiService.askGemini(
+                conversationHistory,
+                new GeminiService.GeminiCallback() {
             @Override
             public void onSuccess(String response) {
 
@@ -85,7 +137,10 @@ public class ChatbotActivity extends AppCompatActivity {
                     adapter.notifyItemRemoved(typingIndex);
 
                     // Add AI response
-                    messageList.add(new Message(response,false));
+                    Message botMessage = new Message(response, false);
+
+                    messageList.add(botMessage);
+                    saveMessageToFirebase(botMessage);
                     adapter.notifyItemInserted(messageList.size()-1);
 
                     recyclerView.scrollToPosition(messageList.size()-1);
@@ -122,5 +177,69 @@ public class ChatbotActivity extends AppCompatActivity {
         });
 
     }
+    private void saveMessageToFirebase(Message message) {
 
+        android.util.Log.d(
+                "CHAT_DEBUG",
+                "saveMessageToFirebase() CALLED"
+        );
+
+        android.util.Log.d(
+                "CHAT_DEBUG",
+                "Username = [" + username + "]"
+        );
+
+        if (username == null || username.isEmpty()) {
+
+            android.util.Log.e(
+                    "CHAT_DEBUG",
+                    "Username is empty. Firebase write cancelled."
+            );
+
+            return;
+        }
+
+        String messageId = chatRef.push().getKey();
+
+        if (messageId == null) {
+
+            android.util.Log.e(
+                    "CHAT_DEBUG",
+                    "Could not generate message ID."
+            );
+
+            return;
+        }
+
+        android.util.Log.d(
+                "CHAT_DEBUG",
+                "Generated message ID = " + messageId
+        );
+
+        chatRef.child(messageId)
+                .setValue(message)
+                .addOnCompleteListener(task -> {
+
+                    if (task.isSuccessful()) {
+
+                        android.util.Log.d(
+                                "CHAT_DEBUG",
+                                "Message saved successfully!"
+                        );
+
+                    } else {
+
+                        Exception error = task.getException();
+
+                        android.util.Log.e(
+                                "CHAT_DEBUG",
+                                "Firebase save failed: "
+                                        + (error != null
+                                        ? error.getMessage()
+                                        : "Unknown error"),
+                                error
+                        );
+                    }
+                });
+    }
 }

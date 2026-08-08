@@ -5,6 +5,10 @@ public class Message {
     private String message;
     private boolean isUser;
 
+    public Message() {
+        // Required for Firebase
+    }
+
     public Message(String message, boolean isUser) {
         this.message = message;
         this.isUser = isUser;
