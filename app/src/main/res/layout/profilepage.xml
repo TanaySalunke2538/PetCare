@@ -9,7 +9,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -17,124 +18,174 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Profile Image -->
+            <!-- BACK BUTTON -->
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="start"
+                android:background="@android:color/transparent"
+                android:contentDescription="Back"
+                android:src="@drawable/ic_back_button"
+                app:tint="@color/orange" />
+
+
+            <!-- PET PROFILE PHOTO -->
 
             <ImageView
                 android:id="@+id/imgProfile"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
                 android:layout_gravity="center"
-                android:src="@drawable/pet_logo"
-                android:scaleType="centerCrop"
-                android:background="@drawable/button_light"
-                android:padding="18dp"/>
+                android:layout_marginTop="20dp"
+                android:background="@drawable/circle_photo_border"
+                android:clipToOutline="true"
+                android:contentDescription="Pet Photo"
+                android:outlineProvider="background"
+                android:padding="5dp"
+                android:scaleType="centerCrop" />
+
+
+            <!-- CHANGE PHOTO BUTTON -->
+
+            <Button
+                android:id="@+id/btnChangePhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="14dp"
+                android:backgroundTint="#E8EEF7"
+                android:text="Change Photo"
+                android:textAllCaps="false"
+                android:textColor="#3F5875"
+                android:textSize="15sp" />
+
+
+            <!-- PAGE TITLE -->
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="18dp"
                 android:text="Pet Profile"
                 android:textColor="#F7943D"
-                android:textStyle="bold"
-                android:textSize="28sp"/>
+                android:textSize="28sp"
+                android:textStyle="bold" />
 
-            <!-- Pet Name -->
+
+            <!-- PET NAME -->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
                 android:hint="Pet Name"
-                app:boxBackgroundMode="outline">
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="#F7943D">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPetName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Pet DOB -->
+
+            <!-- AGE -->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Pet Date of Birth"
-                app:boxBackgroundMode="outline">
+                android:hint="Date of Birth"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="#F7943D">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDOB"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="date"/>
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Owner Name -->
+
+            <!-- OWNER NAME -->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Owner Name"
-                app:boxBackgroundMode="outline">
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="#F7943D">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etOwnerName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Phone -->
+
+            <!-- PHONE NUMBER -->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Phone Number"
-                app:boxBackgroundMode="outline">
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="#F7943D">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone"/>
+                    android:inputType="phone" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Email -->
+
+            <!-- EMAIL -->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Email Address"
-                app:boxBackgroundMode="outline">
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="#F7943D">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"/>
+                    android:inputType="textEmailAddress" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Save Button -->
+
+            <!-- SAVE PROFILE BUTTON -->
 
             <Button
                 android:id="@+id/btnSaveProfile"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"
                 android:backgroundTint="#F7943D"
                 android:text="Save Profile"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:textSize="17sp"/>
+                android:textSize="17sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
