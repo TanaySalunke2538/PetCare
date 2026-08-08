@@ -73,6 +73,7 @@ public class ChatbotActivity extends AppCompatActivity {
         btnBack.setOnClickListener(
                 v -> finish()
         );
+        btnClearChat.setOnClickListener(v -> showClearChatDialog());
 
         btnSend.setOnClickListener(
                 v -> sendMessage()
@@ -314,5 +315,57 @@ public class ChatbotActivity extends AppCompatActivity {
         adapter.notifyItemInserted(
                 messageList.size() - 1
         );
+    }
+    private void showClearChatDialog() {
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Clear chat?")
+                .setMessage(
+                        "This will permanently delete your PetCare AI conversation."
+                )
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Clear", (dialog, which) -> clearChat())
+                .show();
+    }
+    private void clearChat() {
+
+        if (username == null || username.isEmpty()) {
+            return;
+        }
+
+        chatRef.removeValue()
+                .addOnCompleteListener(task -> {
+
+                    if (task.isSuccessful()) {
+
+                        messageList.clear();
+
+                        adapter.notifyDataSetChanged();
+
+                        showWelcomeMessage();
+
+                        android.widget.Toast.makeText(
+                                ChatbotActivity.this,
+                                "Chat cleared",
+                                android.widget.Toast.LENGTH_SHORT
+                        ).show();
+
+                    } else {
+
+                        Exception error = task.getException();
+
+                        android.widget.Toast.makeText(
+                                ChatbotActivity.this,
+                                "Unable to clear chat",
+                                android.widget.Toast.LENGTH_SHORT
+                        ).show();
+
+                        android.util.Log.e(
+                                "CHAT_DEBUG",
+                                "Clear chat failed",
+                                error
+                        );
+                    }
+                });
     }
 }
