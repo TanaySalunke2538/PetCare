@@ -1,17 +1,12 @@
 package com.example.petcare;
 
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,30 +23,51 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+
 public class Home extends AppCompatActivity {
 
     private DatabaseReference reminderRef;
     private FirebaseFirestore db;
+
     private CardView cardProfile;
     private CardView cardCalendar;
     private CardView cardReminder;
+    private CardView cardUpcomingReminders;
+
     private Button btnbot;
+
     private TextView txtWelcome;
 
     private ListView homeReminderList;
-    private TextView txtUpcomingReminder;
+
     private ArrayList<String> reminderList;
     private ArrayAdapter<String> reminderAdapter;
+
     private TextView txtPetNameHome;
     private TextView txtPetAgeHome;
     private ImageView imgPetHome;
+
     private String username;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.home);
+
+
+        // =====================================================
+        // PET PROFILE
+        // NO ANIMATION
+        // =====================================================
+
         txtPetNameHome =
                 findViewById(R.id.txtPetNameHome);
 
@@ -61,78 +77,171 @@ public class Home extends AppCompatActivity {
         imgPetHome =
                 findViewById(R.id.imgPetHome);
 
+
+        // =====================================================
+        // CHAT WITH ALEX
+        // NO ANIMATION
+        // =====================================================
+
         btnbot =
                 findViewById(R.id.btnbot);
-        cardProfile =
-                findViewById(R.id.cardProfile);
-        // Get username
-        username = getIntent().getStringExtra("username");
+
+
+        // =====================================================
+        // GET USERNAME
+        // =====================================================
+
+        username =
+                getIntent().getStringExtra("username");
 
         if (username == null) {
             username = "";
         }
 
-        db = FirebaseFirestore.getInstance();
-        // Welcome text
-        txtWelcome = findViewById(R.id.txtWelcome);
-        txtWelcome.setText("Welcome, " + username + "!");
 
-        // AI Bot button
+        // =====================================================
+        // FIRESTORE
+        // =====================================================
+
+        db =
+                FirebaseFirestore.getInstance();
+
+
+        // =====================================================
+        // WELCOME
+        // =====================================================
+
+        txtWelcome =
+                findViewById(R.id.txtWelcome);
+
+        txtWelcome.setText(
+                "Welcome, " + username + "!"
+        );
+
+
+        // =====================================================
+        // CHAT WITH ALEX
+        // NO ANIMATION
+        // =====================================================
+
         btnbot.setOnClickListener(v -> {
 
             Intent intent =
-                    new Intent(Home.this, ChatbotActivity.class);
+                    new Intent(
+                            Home.this,
+                            ChatbotActivity.class
+                    );
 
-            intent.putExtra("username", username);
+            intent.putExtra(
+                    "username",
+                    username
+            );
 
             startActivity(intent);
         });
+
+
+        // =====================================================
+        // LOAD PET PROFILE
+        // =====================================================
+
         loadPetProfile();
 
         loadPetPhoto();
 
-        // Cards
-        cardProfile = findViewById(R.id.cardProfile);
-        cardCalendar = findViewById(R.id.cardCalendar);
-        cardReminder = findViewById(R.id.cardReminder);
 
-        // Firebase reference
-        reminderRef = FirebaseDatabase
-                .getInstance()
-                .getReference("Users")
-                .child(username)
-                .child("reminders");
+        // =====================================================
+        // HOME CARDS
+        // =====================================================
 
-        // Home reminder ListView
+        cardProfile =
+                findViewById(R.id.cardProfile);
+
+        cardCalendar =
+                findViewById(R.id.cardCalendar);
+
+        cardReminder =
+                findViewById(R.id.cardReminder);
+
+        cardUpcomingReminders =
+                findViewById(R.id.cardUpcomingReminders);
+
+
+        // =====================================================
+        // FIREBASE REMINDER REFERENCE
+        // =====================================================
+
+        reminderRef =
+                FirebaseDatabase
+                        .getInstance()
+                        .getReference("Users")
+                        .child(username)
+                        .child("reminders");
+
+
+        // =====================================================
+        // REMINDER LIST
+        // =====================================================
+
         homeReminderList =
                 findViewById(R.id.homeReminderList);
 
-        reminderList = new ArrayList<>();
+        reminderList =
+                new ArrayList<>();
 
-        reminderAdapter = new ArrayAdapter<>(
-                this,
-                R.layout.item_reminder,
-                R.id.txtReminder,
-                reminderList
+
+        reminderAdapter =
+                new ArrayAdapter<>(
+                        this,
+                        R.layout.item_reminder,
+                        R.id.txtReminder,
+                        reminderList
+                );
+
+        homeReminderList.setAdapter(
+                reminderAdapter
         );
 
-        homeReminderList.setAdapter(reminderAdapter);
 
-        // Load reminders
+        // =====================================================
+        // LOAD REMINDERS
+        // =====================================================
+
         loadUpcomingReminders();
 
-        // Profile
+
+        // =====================================================
+        // START ANIMATION
+        // =====================================================
+
+        startHomeAnimations();
+
+
+        // =====================================================
+        // PROFILE
+        // =====================================================
+
         cardProfile.setOnClickListener(v -> {
 
             Intent intent =
-                    new Intent(Home.this, Profilepage.class);
+                    new Intent(
+                            Home.this,
+                            Profilepage.class
+                    );
 
-            intent.putExtra("username", username);
+            intent.putExtra(
+                    "username",
+                    username
+            );
 
             startActivity(intent);
         });
 
-        // Calendar
+
+        // =====================================================
+        // CALENDAR
+        // =====================================================
+
         cardCalendar.setOnClickListener(v -> {
 
             Intent intent =
@@ -141,22 +250,135 @@ public class Home extends AppCompatActivity {
                             com.example.petcare.Calendar.class
                     );
 
-            intent.putExtra("username", username);
+            intent.putExtra(
+                    "username",
+                    username
+            );
 
             startActivity(intent);
         });
 
-        // Memories
+
+        // =====================================================
+        // MEMORIES
+        // =====================================================
+
         cardReminder.setOnClickListener(v -> {
 
             Intent intent =
-                    new Intent(Home.this, Memories.class);
+                    new Intent(
+                            Home.this,
+                            Memories.class
+                    );
 
-            intent.putExtra("username", username);
+            intent.putExtra(
+                    "username",
+                    username
+            );
 
             startActivity(intent);
         });
     }
+
+
+    // =====================================================
+    // HOME PAGE ANIMATIONS
+    // =====================================================
+
+    private void startHomeAnimations() {
+
+        DecelerateInterpolator interpolator =
+                new DecelerateInterpolator(1.5f);
+
+
+        // =====================================================
+        // INITIAL POSITIONS
+        // =====================================================
+
+        // Profile
+        cardProfile.setAlpha(0f);
+        cardProfile.setTranslationY(100f);
+
+
+        // Calendar
+        cardCalendar.setAlpha(0f);
+        cardCalendar.setTranslationY(100f);
+
+
+        // Memories
+        cardReminder.setAlpha(0f);
+        cardReminder.setTranslationY(100f);
+
+
+        // Upcoming Reminders
+        cardUpcomingReminders.setAlpha(0f);
+        cardUpcomingReminders.setTranslationY(100f);
+
+
+        // =====================================================
+        // PROFILE
+        // =====================================================
+
+        cardProfile.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setStartDelay(150)
+                .setDuration(550)
+                .setInterpolator(interpolator)
+                .start();
+
+
+        // =====================================================
+        // CALENDAR
+        // =====================================================
+
+        cardCalendar.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setStartDelay(300)
+                .setDuration(550)
+                .setInterpolator(interpolator)
+                .start();
+
+
+        // =====================================================
+        // MEMORIES
+        // =====================================================
+
+        cardReminder.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setStartDelay(450)
+                .setDuration(550)
+                .setInterpolator(interpolator)
+                .start();
+
+
+        // =====================================================
+        // UPCOMING REMINDERS
+        // =====================================================
+
+        cardUpcomingReminders.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setStartDelay(600)
+                .setDuration(550)
+                .setInterpolator(interpolator)
+                .start();
+
+
+        // =====================================================
+        // NOT ANIMATED:
+        //
+        // cardPetSummary
+        // btnbot
+        // =====================================================
+    }
+
+
+    // =====================================================
+    // LOAD UPCOMING REMINDERS
+    // =====================================================
 
     private void loadUpcomingReminders() {
 
@@ -169,6 +391,7 @@ public class Home extends AppCompatActivity {
 
                         reminderList.clear();
 
+
                         if (!snapshot.exists()) {
 
                             reminderList.add(
@@ -180,11 +403,15 @@ public class Home extends AppCompatActivity {
                             return;
                         }
 
+
                         for (DataSnapshot data :
                                 snapshot.getChildren()) {
 
                             Reminder reminder =
-                                    data.getValue(Reminder.class);
+                                    data.getValue(
+                                            Reminder.class
+                                    );
+
 
                             if (reminder != null) {
 
@@ -201,6 +428,7 @@ public class Home extends AppCompatActivity {
                             }
                         }
 
+
                         if (reminderList.isEmpty()) {
 
                             reminderList.add(
@@ -208,8 +436,10 @@ public class Home extends AppCompatActivity {
                             );
                         }
 
+
                         reminderAdapter.notifyDataSetChanged();
                     }
+
 
                     @Override
                     public void onCancelled(
@@ -225,8 +455,12 @@ public class Home extends AppCompatActivity {
                     }
                 }
         );
-
     }
+
+
+    // =====================================================
+    // LOAD PET PROFILE
+    // =====================================================
 
     private void loadPetProfile() {
 
@@ -237,10 +471,6 @@ public class Home extends AppCompatActivity {
                 .get()
 
                 .addOnSuccessListener(document -> {
-
-                    // =====================================
-                    // PROFILE DOES NOT EXIST
-                    // =====================================
 
                     if (!document.exists()) {
 
@@ -256,9 +486,7 @@ public class Home extends AppCompatActivity {
                     }
 
 
-                    // =====================================
                     // PET NAME
-                    // =====================================
 
                     String petName =
                             document.getString(
@@ -278,13 +506,10 @@ public class Home extends AppCompatActivity {
                         txtPetNameHome.setText(
                                 "Your Pet"
                         );
-
                     }
 
 
-                    // =====================================
                     // PET DOB
-                    // =====================================
 
                     String dob =
                             document.getString(
@@ -292,21 +517,22 @@ public class Home extends AppCompatActivity {
                             );
 
 
+                    if (dob != null &&
+                            !dob.isEmpty()) {
 
-                    if (dob != null && !dob.isEmpty()) {
+                        String age =
+                                calculateAge(dob);
 
-                        String age = calculateAge(dob);
-
-                        txtPetAgeHome.setText(age);
+                        txtPetAgeHome.setText(
+                                age
+                        );
 
                     } else {
 
                         txtPetAgeHome.setText(
                                 "Age unknown"
                         );
-
                     }
-
 
                 })
 
@@ -319,9 +545,7 @@ public class Home extends AppCompatActivity {
                     txtPetAgeHome.setText(
                             "Age unavailable"
                     );
-
                 });
-
     }
 
 
@@ -331,9 +555,12 @@ public class Home extends AppCompatActivity {
 
     private String calculateAge(String dob) {
 
-        if (dob == null || dob.trim().isEmpty()) {
+        if (dob == null ||
+                dob.trim().isEmpty()) {
+
             return "Age unknown";
         }
+
 
         try {
 
@@ -345,48 +572,80 @@ public class Home extends AppCompatActivity {
 
             sdf.setLenient(false);
 
-            Date birthDate = sdf.parse(dob);
+
+            Date birthDate =
+                    sdf.parse(dob);
+
 
             if (birthDate == null) {
+
                 return "Age unknown";
             }
 
-            java.util.Calendar birth = java.util.Calendar.getInstance();
+
+            java.util.Calendar birth =
+                    java.util.Calendar.getInstance();
+
             birth.setTime(birthDate);
 
-            java.util.Calendar today = java.util.Calendar.getInstance();
+
+            java.util.Calendar today =
+                    java.util.Calendar.getInstance();
+
 
             int years =
-                    today.get(java.util.Calendar.YEAR)
-                            - birth.get(java.util.Calendar.YEAR);
+                    today.get(
+                            java.util.Calendar.YEAR
+                    )
+                            -
+                            birth.get(
+                                    java.util.Calendar.YEAR
+                            );
+
 
             int months =
-                    today.get(java.util.Calendar.MONTH)
-                            - birth.get(java.util.Calendar.MONTH);
+                    today.get(
+                            java.util.Calendar.MONTH
+                    )
+                            -
+                            birth.get(
+                                    java.util.Calendar.MONTH
+                            );
+
 
             int days =
-                    today.get(java.util.Calendar.DAY_OF_MONTH)
-                            - birth.get(java.util.Calendar.DAY_OF_MONTH);
+                    today.get(
+                            java.util.Calendar.DAY_OF_MONTH
+                    )
+                            -
+                            birth.get(
+                                    java.util.Calendar.DAY_OF_MONTH
+                            );
 
-            // Birthday has not occurred this month
+
             if (days < 0) {
                 months--;
             }
 
-            // Adjust months when necessary
+
             if (months < 0) {
+
                 years--;
                 months += 12;
             }
 
-            return years + " yrs " + months + " months";
+
+            return years +
+                    " yrs " +
+                    months +
+                    " months";
+
 
         } catch (ParseException e) {
 
             return "Age unknown";
         }
     }
-
 
 
     // =====================================================
@@ -402,20 +661,12 @@ public class Home extends AppCompatActivity {
                 );
 
 
-        // =====================================
-        // GET SAVED FILE PATH
-        // =====================================
-
         String photoPath =
                 preferences.getString(
                         "profilePhoto_" + username,
                         null
                 );
 
-
-        // =====================================
-        // NO PHOTO SAVED
-        // =====================================
 
         if (photoPath == null ||
                 photoPath.isEmpty()) {
@@ -425,21 +676,12 @@ public class Home extends AppCompatActivity {
             );
 
             return;
-
         }
 
-
-        // =====================================
-        // CREATE FILE OBJECT
-        // =====================================
 
         File photoFile =
                 new File(photoPath);
 
-
-        // =====================================
-        // FILE DOES NOT EXIST
-        // =====================================
 
         if (!photoFile.exists()) {
 
@@ -448,23 +690,14 @@ public class Home extends AppCompatActivity {
             );
 
             return;
-
         }
 
-
-        // =====================================
-        // LOAD BITMAP
-        // =====================================
 
         Bitmap bitmap =
                 BitmapFactory.decodeFile(
                         photoFile.getAbsolutePath()
                 );
 
-
-        // =====================================
-        // DISPLAY PHOTO
-        // =====================================
 
         if (bitmap != null) {
 
@@ -477,84 +710,12 @@ public class Home extends AppCompatActivity {
             imgPetHome.setImageResource(
                     R.drawable.pet_logo
             );
-
         }
-
-    }
-    private void loadUpcomingReminder() {
-
-        reminderRef.addValueEventListener(
-                new ValueEventListener() {
-
-                    @Override
-                    public void onDataChange(
-                            DataSnapshot snapshot) {
-
-                        // =================================
-                        // NO REMINDERS
-                        // =================================
-
-                        if (!snapshot.exists()) {
-
-                            txtUpcomingReminder.setText(
-                                    "No upcoming reminders"
-                            );
-
-                            return;
-
-                        }
-
-
-                        // =================================
-                        // FIND REMINDER
-                        // =================================
-
-                        for (DataSnapshot data :
-                                snapshot.getChildren()) {
-
-                            Reminder reminder =
-                                    data.getValue(
-                                            Reminder.class
-                                    );
-
-
-                            if (reminder != null) {
-
-                                txtUpcomingReminder.setText(
-                                        reminder.getTitle()
-                                                + "\n"
-                                                + reminder.getDate()
-                                                + "  "
-                                                + reminder.getTime()
-                                );
-
-                                break;
-
-                            }
-
-                        }
-
-                    }
-
-
-                    @Override
-                    public void onCancelled(
-                            DatabaseError error) {
-
-                        txtUpcomingReminder.setText(
-                                "No upcoming reminders"
-                        );
-
-                    }
-
-                }
-        );
-
     }
 
 
     // =====================================================
-    // REFRESH PET DATA WHEN RETURNING TO HOME
+    // REFRESH PET DATA
     // =====================================================
 
     @Override
@@ -563,19 +724,12 @@ public class Home extends AppCompatActivity {
         super.onResume();
 
 
-        // Reload photo and profile whenever
-        // we return to Home
-
         if (username != null &&
                 !username.isEmpty()) {
 
             loadPetPhoto();
 
             loadPetProfile();
-
         }
-
     }
-
-
 }

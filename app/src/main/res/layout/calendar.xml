@@ -3,6 +3,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#F7F9FC"
     android:fillViewport="true">
 
@@ -77,8 +78,18 @@
             android:shadowDy="2"
             android:shadowRadius="3" />
 
-
         <!-- REMINDERS CARD -->
+        <ImageButton
+            android:id="@+id/btnDelete"
+            app:tint="#000000"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Delete memory"
+            android:padding="10dp"
+            android:src="@drawable/ic_delete" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
