@@ -5,8 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.View;
-import android.view.animation.DecelerateInterpolator;
+
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -38,13 +37,14 @@ public class Home extends AppCompatActivity {
     private CardView cardProfile;
     private CardView cardCalendar;
     private CardView cardReminder;
-    private CardView cardUpcomingReminders;
+    private CardView cardHealth;
 
     private Button btnbot;
 
     private TextView txtWelcome;
 
     private ListView homeReminderList;
+    private TextView txtUpcomingReminder;
 
     private ArrayList<String> reminderList;
     private ArrayAdapter<String> reminderAdapter;
@@ -64,8 +64,7 @@ public class Home extends AppCompatActivity {
 
 
         // =====================================================
-        // PET PROFILE
-        // NO ANIMATION
+        // PET PROFILE UI
         // =====================================================
 
         txtPetNameHome =
@@ -79,8 +78,7 @@ public class Home extends AppCompatActivity {
 
 
         // =====================================================
-        // CHAT WITH ALEX
-        // NO ANIMATION
+        // AI BOT
         // =====================================================
 
         btnbot =
@@ -103,12 +101,11 @@ public class Home extends AppCompatActivity {
         // FIRESTORE
         // =====================================================
 
-        db =
-                FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
 
 
         // =====================================================
-        // WELCOME
+        // WELCOME TEXT
         // =====================================================
 
         txtWelcome =
@@ -120,8 +117,7 @@ public class Home extends AppCompatActivity {
 
 
         // =====================================================
-        // CHAT WITH ALEX
-        // NO ANIMATION
+        // AI CHATBOT
         // =====================================================
 
         btnbot.setOnClickListener(v -> {
@@ -163,8 +159,8 @@ public class Home extends AppCompatActivity {
         cardReminder =
                 findViewById(R.id.cardReminder);
 
-        cardUpcomingReminders =
-                findViewById(R.id.cardUpcomingReminders);
+        cardHealth =
+                findViewById(R.id.cardHealth);
 
 
         // =====================================================
@@ -180,11 +176,13 @@ public class Home extends AppCompatActivity {
 
 
         // =====================================================
-        // REMINDER LIST
+        // HOME REMINDER LIST
         // =====================================================
 
         homeReminderList =
-                findViewById(R.id.homeReminderList);
+                findViewById(
+                        R.id.homeReminderList
+                );
 
         reminderList =
                 new ArrayList<>();
@@ -208,13 +206,6 @@ public class Home extends AppCompatActivity {
         // =====================================================
 
         loadUpcomingReminders();
-
-
-        // =====================================================
-        // START ANIMATION
-        // =====================================================
-
-        startHomeAnimations();
 
 
         // =====================================================
@@ -278,107 +269,33 @@ public class Home extends AppCompatActivity {
 
             startActivity(intent);
         });
+
+
+        // =====================================================
+        // HEALTH RECORDS
+        // =====================================================
+
+        cardHealth.setOnClickListener(v -> {
+
+            Intent intent =
+                    new Intent(
+                            Home.this,
+                            health.class
+                    );
+
+            intent.putExtra(
+                    "username",
+                    username
+            );
+
+            startActivity(intent);
+        });
     }
 
 
-    // =====================================================
-    // HOME PAGE ANIMATIONS
-    // =====================================================
-
-    private void startHomeAnimations() {
-
-        DecelerateInterpolator interpolator =
-                new DecelerateInterpolator(1.5f);
-
-
-        // =====================================================
-        // INITIAL POSITIONS
-        // =====================================================
-
-        // Profile
-        cardProfile.setAlpha(0f);
-        cardProfile.setTranslationY(100f);
-
-
-        // Calendar
-        cardCalendar.setAlpha(0f);
-        cardCalendar.setTranslationY(100f);
-
-
-        // Memories
-        cardReminder.setAlpha(0f);
-        cardReminder.setTranslationY(100f);
-
-
-        // Upcoming Reminders
-        cardUpcomingReminders.setAlpha(0f);
-        cardUpcomingReminders.setTranslationY(100f);
-
-
-        // =====================================================
-        // PROFILE
-        // =====================================================
-
-        cardProfile.animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setStartDelay(150)
-                .setDuration(550)
-                .setInterpolator(interpolator)
-                .start();
-
-
-        // =====================================================
-        // CALENDAR
-        // =====================================================
-
-        cardCalendar.animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setStartDelay(300)
-                .setDuration(550)
-                .setInterpolator(interpolator)
-                .start();
-
-
-        // =====================================================
-        // MEMORIES
-        // =====================================================
-
-        cardReminder.animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setStartDelay(450)
-                .setDuration(550)
-                .setInterpolator(interpolator)
-                .start();
-
-
-        // =====================================================
-        // UPCOMING REMINDERS
-        // =====================================================
-
-        cardUpcomingReminders.animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setStartDelay(600)
-                .setDuration(550)
-                .setInterpolator(interpolator)
-                .start();
-
-
-        // =====================================================
-        // NOT ANIMATED:
-        //
-        // cardPetSummary
-        // btnbot
-        // =====================================================
-    }
-
-
-    // =====================================================
+    // =========================================================
     // LOAD UPCOMING REMINDERS
-    // =====================================================
+    // =========================================================
 
     private void loadUpcomingReminders() {
 
@@ -391,14 +308,14 @@ public class Home extends AppCompatActivity {
 
                         reminderList.clear();
 
-
                         if (!snapshot.exists()) {
 
                             reminderList.add(
                                     "No upcoming reminders"
                             );
 
-                            reminderAdapter.notifyDataSetChanged();
+                            reminderAdapter
+                                    .notifyDataSetChanged();
 
                             return;
                         }
@@ -411,7 +328,6 @@ public class Home extends AppCompatActivity {
                                     data.getValue(
                                             Reminder.class
                                     );
-
 
                             if (reminder != null) {
 
@@ -437,7 +353,8 @@ public class Home extends AppCompatActivity {
                         }
 
 
-                        reminderAdapter.notifyDataSetChanged();
+                        reminderAdapter
+                                .notifyDataSetChanged();
                     }
 
 
@@ -451,16 +368,17 @@ public class Home extends AppCompatActivity {
                                 "Unable to load reminders"
                         );
 
-                        reminderAdapter.notifyDataSetChanged();
+                        reminderAdapter
+                                .notifyDataSetChanged();
                     }
                 }
         );
     }
 
 
-    // =====================================================
+    // =========================================================
     // LOAD PET PROFILE
-    // =====================================================
+    // =========================================================
 
     private void loadPetProfile() {
 
@@ -549,9 +467,9 @@ public class Home extends AppCompatActivity {
     }
 
 
-    // =====================================================
+    // =========================================================
     // CALCULATE PET AGE
-    // =====================================================
+    // =========================================================
 
     private String calculateAge(String dob) {
 
@@ -571,7 +489,6 @@ public class Home extends AppCompatActivity {
                     );
 
             sdf.setLenient(false);
-
 
             Date birthDate =
                     sdf.parse(dob);
@@ -624,6 +541,7 @@ public class Home extends AppCompatActivity {
 
 
             if (days < 0) {
+
                 months--;
             }
 
@@ -640,7 +558,6 @@ public class Home extends AppCompatActivity {
                     months +
                     " months";
 
-
         } catch (ParseException e) {
 
             return "Age unknown";
@@ -648,9 +565,9 @@ public class Home extends AppCompatActivity {
     }
 
 
-    // =====================================================
+    // =========================================================
     // LOAD PET PHOTO
-    // =====================================================
+    // =========================================================
 
     private void loadPetPhoto() {
 
@@ -714,9 +631,9 @@ public class Home extends AppCompatActivity {
     }
 
 
-    // =====================================================
-    // REFRESH PET DATA
-    // =====================================================
+    // =========================================================
+    // REFRESH HOME DATA
+    // =========================================================
 
     @Override
     protected void onResume() {

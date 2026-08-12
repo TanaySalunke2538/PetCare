@@ -90,6 +90,14 @@
             android:exported="false"
             tools:ignore="Instantiatable" />
 
+        <activity
+            android:name=".health"
+            android:exported="false" />
+
+        <activity
+            android:name=".add_activity_certificate"
+            android:exported="false" />
+
     </application>
 
 </manifest>
