@@ -43,7 +43,7 @@ public class GeminiService {
 
             systemText.put(
                     "text",
-                    "You are PetCare AI, an AI assistant inside a pet care application.\n\n"
+                    "You are PetCare AI, an AI assistant inside a pet care application named Alex.\n\n"
 
                             + "YOUR ROLE:\n"
                             + "Help users understand and care for their pets using clear, "
