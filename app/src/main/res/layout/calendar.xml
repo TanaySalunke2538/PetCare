@@ -1,117 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F9FC"
-    android:fillViewport="true">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#F7F9FC">
+
+    <!-- ================================================= -->
+    <!-- BACK ARROW -->
+    <!-- ================================================= -->
+
+    <TextView
+        android:id="@+id/btnBack"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:text="‹"
+        android:textSize="42sp"
+        android:textColor="#F47C20"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginBottom="2dp" />
+
+
+    <!-- ================================================= -->
+    <!-- PAGE TITLE -->
+    <!-- ================================================= -->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pet Calendar"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#F47C20"
+        android:gravity="center"
+        android:layout_marginTop="-5dp"
+        android:layout_marginBottom="18dp"
+        android:shadowColor="#55C85A1A"
+        android:shadowDx="0"
+        android:shadowDy="3"
+        android:shadowRadius="5" />
+
+
+    <!-- ================================================= -->
+    <!-- CALENDAR CARD -->
+    <!-- ================================================= -->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:background="@drawable/calendar_gradient"
+        android:elevation="8dp"
+        android:padding="6dp">
 
-        <!-- BACK ARROW -->
-        <TextView
-            android:id="@+id/btnBack"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:text="‹"
-            android:textSize="42sp"
-            android:textColor="#F47C20"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_marginBottom="2dp" />
-
-        <!-- PAGE TITLE -->
-        <TextView
+        <CalendarView
+            android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pet Calendar"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="#F47C20"
-            android:gravity="center"
-            android:layout_marginTop="-5dp"
-            android:layout_marginBottom="18dp"
-            android:shadowColor="#55C85A1A"
-            android:shadowDx="0"
-            android:shadowDy="3"
-            android:shadowRadius="5" />
-
-        <!-- CALENDAR CARD -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/calendar_gradient"
-            android:elevation="8dp"
-            android:padding="6dp">
-
-            <CalendarView
-                android:id="@+id/calendarView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:dateTextAppearance="@style/CalendarDateText"
-                android:weekDayTextAppearance="@style/CalendarWeekText" />
-
-        </LinearLayout>
-
-
-        <!-- REMINDER TITLE -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Upcoming Reminders"
-            android:textSize="21sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
-            android:shadowColor="#33000000"
-            android:shadowDx="0"
-            android:shadowDy="2"
-            android:shadowRadius="3" />
-
-
-        <!-- REMINDERS CARD -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#FFF4EA"
-            android:elevation="7dp"
-            android:padding="8dp">
-
-            <ListView
-                android:id="@+id/listReminders"
-                android:layout_width="match_parent"
-                android:layout_height="125dp"
-                android:divider="@android:color/transparent"
-                android:dividerHeight="6dp"
-                android:background="@android:color/transparent" />
-
-        </LinearLayout>
-
-
-        <!-- ADD REMINDER BUTTON -->
-        <Button
-            android:id="@+id/btnAddReminder"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_orange_gradient"
-            android:elevation="8dp"
-            android:text="+  Add Reminder"
-            android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="17sp"
-            android:textStyle="bold" />
+            android:background="@android:color/transparent"
+            android:dateTextAppearance="@style/CalendarDateText"
+            android:weekDayTextAppearance="@style/CalendarWeekText" />
 
     </LinearLayout>
 
-</ScrollView>
+
+    <!-- ================================================= -->
+    <!-- UPCOMING REMINDERS TITLE -->
+    <!-- ================================================= -->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upcoming Reminders"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="8dp"
+        android:shadowColor="#33000000"
+        android:shadowDx="0"
+        android:shadowDy="2"
+        android:shadowRadius="3" />
+
+
+    <!-- ================================================= -->
+    <!-- REMINDERS CARD -->
+    <!-- ================================================= -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="#FFF4EA"
+        android:elevation="7dp"
+        android:padding="8dp">
+
+
+        <!-- ============================================= -->
+        <!-- ONLY THIS PART SCROLLS -->
+        <!-- ============================================= -->
+
+        <ScrollView
+            android:id="@+id/reminderScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="false"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"
+            android:overScrollMode="always">
+
+            <LinearLayout
+                android:id="@+id/listReminders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </ScrollView>
+
+    </LinearLayout>
+
+
+    <!-- ================================================= -->
+    <!-- ADD REMINDER BUTTON -->
+    <!-- ================================================= -->
+
+    <Button
+        android:id="@+id/btnAddReminder"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/button_orange_gradient"
+        android:elevation="8dp"
+        android:text="+  Add Reminder"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

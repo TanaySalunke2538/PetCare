@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,10 +7,17 @@
     android:layout_height="match_parent"
     android:background="#F7F9FC">
 
+
+    <!-- ================================================= -->
+    <!-- MAIN LANDING PAGE -->
+    <!-- ================================================= -->
+
     <androidx.cardview.widget.CardView
+        android:id="@+id/landingCard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="18dp"
+        android:alpha="0"
         app:cardCornerRadius="32dp"
         app:cardElevation="0dp"
         app:cardUseCompatPadding="true"
@@ -28,8 +36,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
+
+
+                <!-- ================= LANDING LOGO ================= -->
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="170dp"
@@ -38,9 +48,7 @@
                     app:cardCornerRadius="85dp"
                     app:cardElevation="8dp">
 
-
                     <ImageView
-
                         android:id="@+id/imgLogo"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -50,6 +58,9 @@
 
                 </androidx.cardview.widget.CardView>
 
+
+                <!-- ================= PETCARE ================= -->
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -57,6 +68,9 @@
                     android:textColor="#F7943D"
                     android:textSize="32sp"
                     android:textStyle="bold" />
+
+
+                <!-- ================= SUBTITLE ================= -->
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -67,13 +81,18 @@
                     android:textColor="#7A7A7A"
                     android:textSize="15sp" />
 
+
+                <!-- ================= SPACE ================= -->
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1" />
+
+
+                <!-- ================= LOGIN ================= -->
 
                 <Button
-
                     android:id="@+id/btnLogin"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
@@ -84,6 +103,9 @@
                     android:textColor="#FFFFFF"
                     android:textSize="17sp"
                     android:textStyle="bold" />
+
+
+                <!-- ================= CREATE ACCOUNT ================= -->
 
                 <Button
                     android:id="@+id/btnCreateAccount"
@@ -97,6 +119,9 @@
                     android:textColor="#F7943D"
                     android:textSize="17sp"
                     android:textStyle="bold" />
+
+
+                <!-- ================= OR ================= -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -129,19 +154,22 @@
                 </LinearLayout>
 
 
-                    <com.google.android.gms.common.SignInButton
+                <!-- ================= GOOGLE ================= -->
 
-                        android:id="@+id/btnGoogle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                <com.google.android.gms.common.SignInButton
+                    android:id="@+id/btnGoogle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
+
+                <!-- ================= TERMS ================= -->
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="35dp"
                     android:gravity="center"
-                    android:text="By continuing, you agree to our\nTerms &amp; Privacy Policy"
+                    android:text="By continuing, you agree to our&#10;Terms &amp; Privacy Policy"
                     android:textAlignment="center"
                     android:textColor="#9A9A9A"
                     android:textSize="12sp" />
@@ -151,5 +179,35 @@
         </ScrollView>
 
     </androidx.cardview.widget.CardView>
+
+
+    <!-- ================================================= -->
+    <!-- INTRO LOGO -->
+    <!-- THIS APPEARS BEFORE THE LANDING PAGE -->
+    <!-- ================================================= -->
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/introLogoCard"
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:alpha="0"
+        android:elevation="20dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="85dp"
+        app:cardElevation="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/pet_logo" />
+
+    </androidx.cardview.widget.CardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

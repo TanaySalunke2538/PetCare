@@ -1,7 +1,6 @@
 package com.example.petcare;
+
 import android.app.DatePickerDialog;
-import java.util.Calendar;
-import java.util.Locale;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -23,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -57,9 +57,7 @@ public class Profilepage extends AppCompatActivity {
                     uri -> {
 
                         if (uri != null) {
-
                             savePhotoPermanently(uri);
-
                         }
 
                     });
@@ -83,30 +81,22 @@ public class Profilepage extends AppCompatActivity {
 
         imgProfile = findViewById(R.id.imgProfile);
 
-        btnChangePhoto =
-                findViewById(R.id.btnChangePhoto);
+        btnChangePhoto = findViewById(R.id.btnChangePhoto);
 
-        btnSaveProfile =
-                findViewById(R.id.btnSaveProfile);
+        btnSaveProfile = findViewById(R.id.btnSaveProfile);
 
-        btnBack =
-                findViewById(R.id.btnBack);
+        btnBack = findViewById(R.id.btnBack);
 
 
-        etPetName =
-                findViewById(R.id.etPetName);
+        etPetName = findViewById(R.id.etPetName);
 
-        etDOB =
-                findViewById(R.id.etDOB);
+        etDOB = findViewById(R.id.etDOB);
 
-        etOwnerName =
-                findViewById(R.id.etOwnerName);
+        etOwnerName = findViewById(R.id.etOwnerName);
 
-        etPhone =
-                findViewById(R.id.etPhone);
+        etPhone = findViewById(R.id.etPhone);
 
-        etEmail =
-                findViewById(R.id.etEmail);
+        etEmail = findViewById(R.id.etEmail);
 
 
         // =================================================
@@ -120,15 +110,21 @@ public class Profilepage extends AppCompatActivity {
         // GET USERNAME
         // =================================================
 
-        username =
-                getIntent().getStringExtra("username");
-
+        username = getIntent().getStringExtra("username");
 
         if (username == null || username.isEmpty()) {
-
             username = "Guest";
-
         }
+
+
+        // =================================================
+        // DOB CALENDAR
+        // IMPORTANT:
+        // This MUST be outside loadProfile()
+        // so it works for NEW accounts too.
+        // =================================================
+
+        setupDOBPicker();
 
 
         // =================================================
@@ -152,7 +148,7 @@ public class Profilepage extends AppCompatActivity {
 
 
         // =================================================
-        // CREATE PROFILE
+        // SAVE PROFILE
         // =================================================
 
         btnSaveProfile.setOnClickListener(v -> {
@@ -169,6 +165,59 @@ public class Profilepage extends AppCompatActivity {
         btnBack.setOnClickListener(v -> {
 
             finish();
+
+        });
+
+    }
+
+
+    // =====================================================
+    // DOB DATE PICKER
+    // =====================================================
+
+    private void setupDOBPicker() {
+
+        // Prevent keyboard from appearing for DOB
+        etDOB.setFocusable(false);
+        etDOB.setClickable(true);
+
+        etDOB.setOnClickListener(v -> {
+
+            Calendar calendar = Calendar.getInstance();
+
+            int currentYear = calendar.get(Calendar.YEAR);
+            int currentMonth = calendar.get(Calendar.MONTH);
+            int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+
+            DatePickerDialog datePickerDialog =
+                    new DatePickerDialog(
+                            Profilepage.this,
+                            (view, year, month, dayOfMonth) -> {
+
+                                String dob = String.format(
+                                        Locale.getDefault(),
+                                        "%02d/%02d/%04d",
+                                        dayOfMonth,
+                                        month + 1,
+                                        year
+                                );
+
+                                etDOB.setText(dob);
+
+                            },
+                            currentYear,
+                            currentMonth,
+                            currentDay
+                    );
+
+
+            // Prevent selecting a future date
+            datePickerDialog.getDatePicker()
+                    .setMaxDate(System.currentTimeMillis());
+
+
+            datePickerDialog.show();
 
         });
 
@@ -198,15 +247,12 @@ public class Profilepage extends AppCompatActivity {
                 ).show();
 
                 return;
-
             }
 
 
             // Convert image to Bitmap
             Bitmap bitmap =
-                    BitmapFactory.decodeStream(
-                            inputStream
-                    );
+                    BitmapFactory.decodeStream(inputStream);
 
 
             inputStream.close();
@@ -221,7 +267,6 @@ public class Profilepage extends AppCompatActivity {
                 ).show();
 
                 return;
-
             }
 
 
@@ -239,9 +284,7 @@ public class Profilepage extends AppCompatActivity {
 
 
             FileOutputStream outputStream =
-                    new FileOutputStream(
-                            photoFile
-                    );
+                    new FileOutputStream(photoFile);
 
 
             // Save image as JPEG
@@ -524,7 +567,6 @@ public class Profilepage extends AppCompatActivity {
 
                     startActivity(intent);
 
-
                     finish();
 
                 })
@@ -565,7 +607,16 @@ public class Profilepage extends AppCompatActivity {
                         documentSnapshot -> {
 
 
+                            // =================================
+                            // NEW ACCOUNT
+                            // =================================
+
                             if (!documentSnapshot.exists()) {
+
+                                // No profile exists yet.
+                                // DOB picker is already configured
+                                // in onCreate(), so do NOT return
+                                // before setting it.
 
                                 return;
 
@@ -595,31 +646,18 @@ public class Profilepage extends AppCompatActivity {
                             // DOB
                             // =================================
 
-                            etDOB.setOnClickListener(v -> {
+                            String dob =
+                                    documentSnapshot.getString(
+                                            "dob"
+                                    );
 
-                                Calendar calendar = Calendar.getInstance();
 
-                                DatePickerDialog datePickerDialog = new DatePickerDialog(
-                                        Profilepage.this,
-                                        (view, year, month, dayOfMonth) -> {
+                            if (dob != null &&
+                                    !dob.isEmpty()) {
 
-                                            String dob = String.format(
-                                                    Locale.getDefault(),
-                                                    "%02d/%02d/%04d",
-                                                    dayOfMonth,
-                                                    month + 1,
-                                                    year
-                                            );
+                                etDOB.setText(dob);
 
-                                            etDOB.setText(dob);
-                                        },
-                                        calendar.get(Calendar.YEAR),
-                                        calendar.get(Calendar.MONTH),
-                                        calendar.get(Calendar.DAY_OF_MONTH)
-                                );
-
-                                datePickerDialog.show();
-                            });
+                            }
 
 
                             // =================================

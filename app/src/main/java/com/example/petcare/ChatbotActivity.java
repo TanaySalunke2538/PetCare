@@ -317,7 +317,7 @@ public class ChatbotActivity extends AppCompatActivity {
 
         messageList.add(
                 new Message(
-                        "Hello! I'm PetCare AI 🐾\nHow can I help you today?",
+                        "Hello! I'm Alex 🐾\nHow can I help you today?",
                         false
                 )
         );
@@ -331,7 +331,7 @@ public class ChatbotActivity extends AppCompatActivity {
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Clear chat?")
                 .setMessage(
-                        "This will permanently delete your PetCare AI conversation."
+                        "This will permanently delete your conversation with Alex."
                 )
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Clear", (dialog, which) -> clearChat())
